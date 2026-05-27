@@ -327,21 +327,15 @@ def parser_args():
 
 
 def parse_args_task_id_or_step(arg_value: str, default_list: list):
-
     arg_value = arg_value.strip()
-    if arg_value == '' or arg_value == '0':
-        arg_out = default_list
-    elif arg_value.isdigit():
-        arg_out = [ int(arg_value) ]
-    else:
-        if arg_value.find('[') == -1:
-            arg_value = '[' + arg_value
-        if arg_value.find(']') == -1:
-            arg_value = arg_value + ']'
-
-        arg_out = json.loads(arg_value)
-
-    return arg_out
+    if not arg_value or arg_value == '0':
+        return default_list
+    
+    cleaned = arg_value.lstrip('[').rstrip(']')
+    try:
+        return [int(x.strip()) for x in cleaned.split(',') if x.strip()]
+    except ValueError:
+        raise ValueError(f"Invalid list of integers: {arg_value}")
 
 
 if __name__ == '__main__':
